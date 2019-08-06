@@ -10,21 +10,41 @@
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
-        <java.version>1.8</java.version>
+        <checkerframework.version>2.10.0</checkerframework.version>
+        <checkerframework.annotatedJdk>${settings.localRepository}/org/checkerframework/jdk8/${checkerframework.version}/jdk8-${checkerframework.version}.jar</checkerframework.annotatedJdk>
+        <lombok.version>1.18.8</lombok.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker-qual</artifactId>
+            <version>${checkerframework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>jdk8</artifactId>
+            <version>${checkerframework.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.11.1</version>
+            <version>3.12.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -32,9 +52,30 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.checkerframework</groupId>
+                            <artifactId>checker</artifactId>
+                            <version>${checkerframework.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                    <annotationProcessors>
+                        <annotationProcessor>org.checkerframework.checker.nullness.NullnessChecker</annotationProcessor>
+                        <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
+                    </annotationProcessors>
+                    <compilerArgs>
+                        <arg>-AskipUses=java|org\.junit</arg>
+                        <arg>-Xbootclasspath/p:${checkerframework.annotatedJdk}</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>
